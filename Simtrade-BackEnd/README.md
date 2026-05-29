@@ -2,6 +2,7 @@
 
 Este repositorio contiene el backend del proyecto SimTrade, un TFG orientado a simular operaciones de inversion de forma didactica y segura.
 
+
 ## Componentes principales
 
 - [main.py] aplicacion de consola para registro, login, cartera, compras, ventas e historial.
