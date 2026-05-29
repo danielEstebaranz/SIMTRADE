@@ -1,0 +1,7 @@
+python-dotenv
+finnhub-python
+firebase-admin
+fastapi
+uvicorn
+yfinance
+requests
