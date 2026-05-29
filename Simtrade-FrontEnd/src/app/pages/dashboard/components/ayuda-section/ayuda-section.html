@@ -1,0 +1,108 @@
+<section class="help-page" aria-labelledby="help-title">
+  <div class="section-heading">
+    <p class="eyebrow">Centro de ayuda</p>
+    <h2 id="help-title">Preguntas frecuentes</h2>
+    <p class="section-copy">
+      Resuelve las dudas mas habituales antes de iniciar una conversacion con SIMTRADE.
+    </p>
+  </div>
+
+  <div class="faq-list">
+    @for (item of faqItems; track item.question) {
+      <article class="faq-item">
+        <h3>
+          <button
+            type="button"
+            [attr.aria-expanded]="openQuestion() === item.question"
+            [attr.aria-controls]="'faq-' + $index"
+            (click)="toggleQuestion(item.question)"
+          >
+            <span>{{ item.question }}</span>
+            <span aria-hidden="true">{{ openQuestion() === item.question ? '-' : '+' }}</span>
+          </button>
+        </h3>
+
+        @if (openQuestion() === item.question) {
+          <div class="faq-answer" [id]="'faq-' + $index">
+            <p>{{ item.answer }}</p>
+          </div>
+        }
+      </article>
+    }
+  </div>
+
+  <aside class="support-card" aria-labelledby="support-title">
+    <div class="support-copy">
+      <p class="eyebrow">Soporte inteligente</p>
+      <h2 id="support-title">No encuentras lo que buscas?</h2>
+      <p>
+        Consulta al asistente sobre compras, cartera, fondos, historial o configuracion.
+      </p>
+    </div>
+
+    <div class="support-actions">
+      <button type="button" (click)="openChat()">Abrir asistente</button>
+    </div>
+  </aside>
+</section>
+
+@if (chatOpen()) {
+  <div class="chat-backdrop" role="presentation" (click)="closeChat()">
+    <section
+      class="chat-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="chat-title"
+      tabindex="-1"
+      (keydown.escape)="closeChat()"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="chat-header">
+        <div>
+          <p class="eyebrow">Asistente virtual</p>
+          <h2 id="chat-title">SIMTRADE</h2>
+          <p class="chat-subtitle">Ayuda sobre el uso de la plataforma</p>
+        </div>
+        <button type="button" aria-label="Cerrar chat" (click)="closeChat()">x</button>
+      </header>
+
+      <div #messagesContainer class="chat-messages" aria-live="polite">
+        @for (message of messages(); track $index) {
+          <p [class.user-message]="message.author === 'user'">
+            <span>{{ message.author === 'assistant' ? 'SIMTRADE' : 'Tu' }}</span>
+            {{ message.text }}
+          </p>
+        }
+
+        @if (chatStatus() === 'sending') {
+          <p class="typing-message" role="status">
+            <span>SIMTRADE</span>
+            Escribiendo...
+          </p>
+        }
+      </div>
+
+      <form class="chat-form" (submit)="$event.preventDefault()">
+        <label for="chat-message">Pregunta sobre Simtrade</label>
+        <textarea
+          id="chat-message"
+          rows="3"
+          autofocus
+          [value]="draftMessage()"
+          [disabled]="chatStatus() === 'sending'"
+          placeholder="Ej.: Como compro un activo?"
+          aria-describedby="chat-error"
+          (input)="updateDraftMessage($event)"
+        ></textarea>
+
+        @if (chatStatus() === 'error') {
+          <p id="chat-error" class="chat-error" role="alert">{{ chatErrorMessage() }}</p>
+        } @else {
+          <span id="chat-error" class="sr-only">El asistente esta disponible.</span>
+        }
+
+        <button type="button" [disabled]="!canSendMessage()" (click)="sendMessage()">Enviar</button>
+      </form>
+    </section>
+  </div>
+}

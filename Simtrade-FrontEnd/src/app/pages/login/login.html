@@ -1,0 +1,64 @@
+<main class="login-page">
+  <section class="login-panel" aria-labelledby="login-title">
+    <div class="brand">
+      <img src="/LogoSimtradeFondoBlanco.png" alt="Simtrade" width="72" height="72">
+      <div>
+        <p class="eyebrow">Simtrade</p>
+        <h1 id="login-title">{{ title() }}</h1>
+      </div>
+    </div>
+
+    <div class="mode-switch" aria-label="Modo de acceso">
+      <button
+        type="button"
+        [class.active]="mode() === 'login'"
+        (click)="setMode('login')"
+      >
+        Login
+      </button>
+      <button
+        type="button"
+        [class.active]="mode() === 'register'"
+        (click)="setMode('register')"
+      >
+        Registro
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label for="username">Email</label>
+      <input
+        id="username"
+        type="email"
+        formControlName="username"
+        autocomplete="email"
+        [attr.aria-invalid]="form.controls.username.invalid && form.controls.username.touched"
+        aria-describedby="username-error"
+      >
+      @if (form.controls.username.invalid && form.controls.username.touched) {
+        <p class="field-error" id="username-error">Escribe un email valido.</p>
+      }
+
+      <label for="password">Contraseña</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+        [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
+        aria-describedby="password-error"
+      >
+      @if (form.controls.password.invalid && form.controls.password.touched) {
+        <p class="field-error" id="password-error">Escribe al menos 6 caracteres.</p>
+      }
+
+      @if (errorMessage()) {
+        <p class="form-error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button class="submit-button" type="submit" [disabled]="isLoading()">
+        {{ isLoading() ? 'Conectando...' : submitLabel() }}
+      </button>
+    </form>
+  </section>
+</main>

@@ -1,0 +1,95 @@
+<section class="statistics-page" aria-labelledby="statistics-title">
+  <div class="section-heading">
+    <p class="eyebrow">Estadisticas</p>
+    <h2 id="statistics-title">Rendimiento de mercado</h2>
+  </div>
+
+  @if (state().status === 'loading') {
+    <p class="state-message" role="status">Cargando estadisticas reales...</p>
+  } @else if (state().status === 'error') {
+    <p class="state-message error" role="alert">{{ state().errorMessage }}</p>
+  } @else if (state().data; as data) {
+    <div class="highlight-grid">
+      <article class="highlight-card">
+        <p>Mejor hoy</p>
+        @if (data.daily.best; as item) {
+          <strong>{{ item.name }}</strong>
+          <span class="positive">{{ signedPercent(item.changePercent) }}</span>
+        } @else {
+          <strong>Sin datos</strong>
+        }
+      </article>
+      <article class="highlight-card">
+        <p>Peor hoy</p>
+        @if (data.daily.worst; as item) {
+          <strong>{{ item.name }}</strong>
+          <span [class.positive]="isPositive(item)" [class.negative]="!isPositive(item)">
+            {{ signedPercent(item.changePercent) }}
+          </span>
+        } @else {
+          <strong>Sin datos</strong>
+        }
+      </article>
+      <article class="highlight-card">
+        <p>Mejor semana</p>
+        @if (data.weekly.best; as item) {
+          <strong>{{ item.name }}</strong>
+          <span [class.positive]="isPositive(item)" [class.negative]="!isPositive(item)">
+            {{ signedPercent(item.changePercent) }}
+          </span>
+        } @else {
+          <strong>Sin datos</strong>
+        }
+      </article>
+      <article class="highlight-card">
+        <p>Peor semana</p>
+        @if (data.weekly.worst; as item) {
+          <strong>{{ item.name }}</strong>
+          <span [class.positive]="isPositive(item)" [class.negative]="!isPositive(item)">
+            {{ signedPercent(item.changePercent) }}
+          </span>
+        } @else {
+          <strong>Sin datos</strong>
+        }
+      </article>
+    </div>
+
+    <div class="tables-grid">
+      <article class="statistics-card" aria-labelledby="daily-title">
+        <h3 id="daily-title">Rendimiento diario</h3>
+        <div class="performance-list">
+          @for (item of data.daily.items; track item.ticker) {
+            <div>
+              <span>
+                <strong>{{ item.name }}</strong>
+                <small>{{ item.ticker }}</small>
+              </span>
+              <span>{{ formatMoney(item.lastPrice) }}</span>
+              <span [class.positive]="isPositive(item)" [class.negative]="!isPositive(item)">
+                {{ signedMoney(item.change) }} ({{ signedPercent(item.changePercent) }})
+              </span>
+            </div>
+          }
+        </div>
+      </article>
+
+      <article class="statistics-card" aria-labelledby="weekly-title">
+        <h3 id="weekly-title">Rendimiento semanal</h3>
+        <div class="performance-list">
+          @for (item of data.weekly.items; track item.ticker) {
+            <div>
+              <span>
+                <strong>{{ item.name }}</strong>
+                <small>{{ item.ticker }}</small>
+              </span>
+              <span>{{ formatMoney(item.lastPrice) }}</span>
+              <span [class.positive]="isPositive(item)" [class.negative]="!isPositive(item)">
+                {{ signedMoney(item.change) }} ({{ signedPercent(item.changePercent) }})
+              </span>
+            </div>
+          }
+        </div>
+      </article>
+    </div>
+  }
+</section>

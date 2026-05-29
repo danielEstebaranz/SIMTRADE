@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.main-content {
+  background: #f8fafc;
+  color: #111827;
+  flex: 1;
+  padding: 2rem;
+}
+
+.main-content h1 {
+  font-size: 2rem;
+  margin: 0 0 0.75rem;
+}
+
+.main-content p {
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 42rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .main-content {
+    padding: 1.25rem;
+  }
+}

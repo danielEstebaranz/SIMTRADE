@@ -1,0 +1,137 @@
+:host {
+  display: block;
+  scroll-margin-top: 1rem;
+}
+
+.statistics-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.section-heading,
+.highlight-card,
+.statistics-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.section-heading,
+.statistics-card {
+  padding: 1.25rem;
+}
+
+.eyebrow {
+  color: var(--color-accent-strong);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+}
+
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h2,
+h3,
+strong {
+  color: var(--color-text);
+}
+
+h2,
+h3 {
+  font-size: 1.2rem;
+}
+
+.highlight-grid,
+.tables-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.highlight-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.highlight-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+}
+
+.highlight-card p,
+.performance-list small,
+.performance-list span:nth-child(2),
+.state-message {
+  color: var(--color-muted);
+}
+
+.highlight-card span {
+  font-weight: 800;
+}
+
+.tables-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.statistics-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.performance-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.performance-list div {
+  align-items: center;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  min-height: 3.75rem;
+  padding: 0.75rem;
+}
+
+.performance-list span:first-child {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.positive {
+  color: var(--color-success);
+}
+
+.negative {
+  color: var(--color-danger);
+}
+
+.state-message {
+  margin: 0;
+}
+
+.state-message.error {
+  background: var(--color-danger-bg);
+  border-radius: 0.5rem;
+  color: var(--color-danger-text);
+  padding: 0.75rem;
+}
+
+@media (max-width: 980px) {
+  .highlight-grid,
+  .tables-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .performance-list div {
+    grid-template-columns: 1fr;
+  }
+}

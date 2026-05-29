@@ -1,0 +1,228 @@
+<section class="summary-grid" aria-label="Resumen de cartera">
+  <article class="summary-card">
+    <p>Saldo disponible</p>
+    <strong>{{ formatNumber(user()?.saldo, 2) }} $</strong>
+  </article>
+
+  <article class="summary-card">
+    <p>Activos en cartera</p>
+    <strong>{{ assetCount() }}</strong>
+  </article>
+
+  <article class="summary-card gain-card">
+    <p>Ganancias totales</p>
+    @if (portfolioGains().hasCostBasis || assetCount() === 0) {
+      <strong
+        [class.positive]="portfolioGains().totalGain > 0"
+        [class.negative]="portfolioGains().totalGain < 0"
+      >
+        {{ signedMoney(portfolioGains().totalGain) }}
+      </strong>
+    } @else {
+      <strong class="muted">Sin coste</strong>
+    }
+  </article>
+
+  <article class="summary-card gain-card">
+    <p>Ganancias diarias</p>
+    <strong
+      [class.positive]="portfolioGains().dailyGain > 0"
+      [class.negative]="portfolioGains().dailyGain < 0"
+    >
+      {{ signedMoney(portfolioGains().dailyGain) }}
+    </strong>
+  </article>
+</section>
+
+<section class="portfolio-workspace" aria-label="Acciones de la cartera">
+  <div class="positions-card">
+    <div class="section-heading">
+      <p class="eyebrow">Cartera</p>
+      <h2>Acciones del usuario</h2>
+    </div>
+
+    @if (positions().length > 0) {
+      <div class="positions-list">
+        @for (position of positions(); track position.ticker) {
+          <button
+            class="position-row"
+            type="button"
+            [class.active]="currentTicker() === position.ticker"
+            [attr.aria-pressed]="currentTicker() === position.ticker"
+            (click)="selectPosition(position.ticker)"
+          >
+            <span class="asset-name">{{ assetName(position.ticker) }}</span>
+            <span class="quantity">{{ formatNumber(position.quantity, 4) }} ud.</span>
+          </button>
+        }
+      </div>
+    } @else {
+      <p class="empty-state">Todavia no tienes acciones en cartera.</p>
+    }
+  </div>
+
+  <div class="trend-card">
+    @if (selectedPosition(); as position) {
+      <div class="trend-header">
+        <div>
+          <p class="eyebrow">Tendencia</p>
+          <h2>{{ assetName(position.ticker) }}</h2>
+          <p class="position-detail">{{ position.ticker }} - {{ formatNumber(position.quantity, 4) }} unidades en cartera</p>
+          @if (selectedPositionGains(); as positionGains) {
+            <dl class="position-meta" aria-label="Resumen de inversion del activo">
+              <div>
+                <dt>Invertido</dt>
+                <dd>
+                  @if (positionGains.hasCostBasis) {
+                    {{ formatNumber(positionGains.investedCost, 2) }} $
+                  } @else {
+                    Sin coste
+                  }
+                </dd>
+              </div>
+            </dl>
+          }
+        </div>
+
+        <div class="trend-actions">
+          <div class="range-switch" aria-label="Rango de la grafica">
+            @for (range of rangeOptions; track range.value) {
+              <button
+                type="button"
+                [class.active]="selectedRange() === range.value"
+                [attr.aria-pressed]="selectedRange() === range.value"
+                (click)="selectRange(range.value)"
+              >
+                {{ range.label }}
+              </button>
+            }
+          </div>
+
+          <div class="sell-actions" aria-label="Opciones de venta">
+            <button type="button" [disabled]="sellState().status === 'saving'" (click)="sellQuickPercentage(25)">25%</button>
+            <button type="button" [disabled]="sellState().status === 'saving'" (click)="sellQuickPercentage(50)">50%</button>
+            <button type="button" [disabled]="sellState().status === 'saving'" (click)="sellQuickPercentage(75)">75%</button>
+            <button type="button" [disabled]="sellState().status === 'saving'" aria-label="Porcentaje personalizado" (click)="openCustomSellDialog()">...</button>
+          </div>
+        </div>
+      </div>
+
+      @if (sellState().status === 'error') {
+        <p class="action-message error" role="alert">{{ sellState().errorMessage }}</p>
+      } @else if (sellState().status === 'success') {
+        <p class="action-message success" role="status">{{ sellState().successMessage }}</p>
+      }
+
+      @if (trendSummary(); as summary) {
+        <div class="trend-stats">
+          <div>
+            <p>Ultimo precio</p>
+            <strong>{{ formatNumber(summary.last, 2) }} $</strong>
+          </div>
+          <div>
+            <p>Cambio</p>
+            <strong [class.positive]="summary.isPositive" [class.negative]="!summary.isPositive">
+              {{ summary.isPositive ? '+' : '' }}{{ formatNumber(summary.change, 2) }} $
+              ({{ summary.isPositive ? '+' : '' }}{{ formatNumber(summary.changePercent, 2) }}%)
+            </strong>
+          </div>
+          <div>
+            <p>Valor actual</p>
+            @if (selectedPositionGains(); as positionGains) {
+              @if (positionGains.totalValue > 0) {
+                <strong>{{ formatNumber(positionGains.totalValue, 2) }} $</strong>
+              } @else {
+                <strong class="muted">Sin valor</strong>
+              }
+            } @else {
+              <strong class="muted">Sin datos</strong>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="chart-container">
+        <canvas
+          #trendCanvas
+          class="trend-chart"
+          [attr.aria-label]="'Grafica real de tendencia de ' + assetName(position.ticker)"
+          role="img"
+        ></canvas>
+
+        @if (trendState().status === 'loading') {
+          <div class="chart-overlay" role="status">Cargando datos reales...</div>
+        } @else if (trendState().status === 'error') {
+          <div class="chart-overlay error" role="alert">{{ trendState().errorMessage }}</div>
+        } @else if (trendState().status === 'loaded' && !trendSummary()) {
+          <div class="chart-overlay">No hay historico real para este activo.</div>
+        }
+      </div>
+
+      @if (trendSummary(); as summary) {
+        <div class="chart-footer">
+          <span>Min. {{ formatNumber(summary.min, 2) }} $</span>
+          <span>Max. {{ formatNumber(summary.max, 2) }} $</span>
+          <span>Datos reales de mercado</span>
+        </div>
+      }
+    } @else {
+      <div class="chart-status">Compra acciones para ver su tendencia aqui.</div>
+    }
+  </div>
+</section>
+
+@if (customSellDialogOpen()) {
+  <div class="modal-backdrop" role="presentation" (click)="closeCustomSellDialog()">
+    <section
+      class="sell-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sell-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Venta</p>
+          <h2 id="sell-dialog-title">{{ assetName(selectedPosition()?.ticker ?? '') }}</h2>
+        </div>
+        <button class="icon-button" type="button" aria-label="Cerrar venta" (click)="closeCustomSellDialog()">x</button>
+      </div>
+
+      <label class="field-label" for="sell-percentage">Porcentaje a vender</label>
+      <input
+        id="sell-percentage"
+        class="percentage-input"
+        type="number"
+        min="0"
+        max="100"
+        step="0.01"
+        inputmode="decimal"
+        [value]="sellState().customPercentage"
+        [disabled]="sellState().status === 'saving'"
+        (input)="updateCustomSellPercentageFromEvent($event)"
+      >
+
+      @if (selectedPosition(); as position) {
+        <p class="sell-preview">
+          Tienes {{ formatNumber(position.quantity, 4) }} unidades.
+        </p>
+      }
+
+      @if (sellState().status === 'error') {
+        <p class="dialog-message error" role="alert">{{ sellState().errorMessage }}</p>
+      }
+
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" (click)="closeCustomSellDialog()">Cancelar</button>
+        <button
+          class="primary-button"
+          type="button"
+          [disabled]="sellState().status === 'saving'"
+          (click)="sellCustomPercentage()"
+        >
+          {{ sellState().status === 'saving' ? 'Vendiendo...' : 'Confirmar venta' }}
+        </button>
+      </div>
+    </section>
+  </div>
+}

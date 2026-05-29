@@ -1,0 +1,152 @@
+<section class="market-workspace" aria-label="Activos disponibles del mercado">
+  <div class="assets-card">
+    <div class="section-heading">
+      <p class="eyebrow">Mercado</p>
+      <h2>Acciones disponibles</h2>
+    </div>
+
+    <div class="assets-list">
+      @for (asset of assets(); track asset.ticker) {
+        <button
+          class="asset-row"
+          type="button"
+          [class.active]="selectedTicker() === asset.ticker"
+          [attr.aria-pressed]="selectedTicker() === asset.ticker"
+          (click)="selectAsset(asset.ticker)"
+        >
+          <span>
+            <span class="ticker">{{ asset.ticker }}</span>
+            <span class="asset-name">{{ asset.name }}</span>
+          </span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="trend-card">
+    @if (selectedAsset(); as asset) {
+      <div class="trend-header">
+        <div>
+          <p class="eyebrow">Tendencia</p>
+          <h2>{{ asset.ticker }}</h2>
+          <p class="asset-detail">{{ asset.name }}</p>
+        </div>
+
+        <div class="trend-actions">
+          <div class="range-switch" aria-label="Rango de la grafica">
+            @for (range of rangeOptions; track range.value) {
+              <button
+                type="button"
+                [class.active]="selectedRange() === range.value"
+                [attr.aria-pressed]="selectedRange() === range.value"
+                (click)="selectRange(range.value)"
+              >
+                {{ range.label }}
+              </button>
+            }
+          </div>
+
+          <button class="buy-button" type="button" (click)="openBuyDialog()">Comprar</button>
+        </div>
+      </div>
+
+      @if (trendSummary(); as summary) {
+        <div class="trend-stats">
+          <div>
+            <p>Ultimo precio</p>
+            <strong>{{ formatNumber(summary.last, 2) }} $</strong>
+          </div>
+          <div>
+            <p>Cambio</p>
+            <strong [class.positive]="summary.isPositive" [class.negative]="!summary.isPositive">
+              {{ summary.isPositive ? '+' : '' }}{{ formatNumber(summary.change, 2) }} $
+              ({{ summary.isPositive ? '+' : '' }}{{ formatNumber(summary.changePercent, 2) }}%)
+            </strong>
+          </div>
+        </div>
+      }
+
+      <div class="chart-container">
+        <canvas
+          #trendCanvas
+          class="trend-chart"
+          [attr.aria-label]="'Grafica real de tendencia de ' + asset.ticker"
+          role="img"
+        ></canvas>
+
+        @if (trendState().status === 'loading') {
+          <div class="chart-overlay" role="status">Cargando datos reales...</div>
+        } @else if (trendState().status === 'error') {
+          <div class="chart-overlay error" role="alert">{{ trendState().errorMessage }}</div>
+        } @else if (trendState().status === 'loaded' && !trendSummary()) {
+          <div class="chart-overlay">No hay historico real para este activo.</div>
+        }
+      </div>
+
+      @if (trendSummary(); as summary) {
+        <div class="chart-footer">
+          <span>Min. {{ formatNumber(summary.min, 2) }} $</span>
+          <span>Max. {{ formatNumber(summary.max, 2) }} $</span>
+          <span>Datos reales de mercado</span>
+        </div>
+      }
+    }
+  </div>
+</section>
+
+@if (buyDialogOpen()) {
+  <div class="modal-backdrop" role="presentation" (click)="closeBuyDialog()">
+    <section
+      class="buy-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="buy-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Compra</p>
+          <h2 id="buy-dialog-title">{{ selectedAsset().ticker }}</h2>
+        </div>
+        <button class="icon-button" type="button" aria-label="Cerrar compra" (click)="closeBuyDialog()">×</button>
+      </div>
+
+      <label class="field-label" for="buy-amount">Dinero a invertir</label>
+      <input
+        id="buy-amount"
+        class="amount-input"
+        type="number"
+        min="0"
+        step="0.01"
+        inputmode="decimal"
+        [value]="buyState().amount"
+        [disabled]="buyState().status === 'saving'"
+        (input)="updateBuyAmountFromEvent($event)"
+      >
+
+      @if (trendSummary(); as summary) {
+        <p class="buy-preview">
+          Precio aprox. {{ formatNumber(summary.last, 2) }} $ por unidad
+        </p>
+      }
+
+      @if (buyState().status === 'error') {
+        <p class="dialog-message error" role="alert">{{ buyState().errorMessage }}</p>
+      } @else if (buyState().status === 'success') {
+        <p class="dialog-message success" role="status">{{ buyState().successMessage }}</p>
+      }
+
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" (click)="closeBuyDialog()">Cancelar</button>
+        <button
+          class="primary-button"
+          type="button"
+          [disabled]="buyState().status === 'saving'"
+          (click)="buySelectedAsset()"
+        >
+          {{ buyState().status === 'saving' ? 'Comprando...' : 'Confirmar compra' }}
+        </button>
+      </div>
+    </section>
+  </div>
+}

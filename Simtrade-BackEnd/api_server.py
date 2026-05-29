@@ -1,5 +1,6 @@
 import os
 import math
+from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Query
@@ -13,7 +14,16 @@ from services.Api_Handler import ApiHandler
 from services.db_handler import DbHandler
 from services.market_assets import MARKET_ASSETS
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / '.env')
+
+
+def backend_path(env_value):
+    if not env_value:
+        return env_value
+
+    path = Path(env_value)
+    return str(path if path.is_absolute() else BASE_DIR / path)
 
 HOST = os.getenv('SIMTRADE_API_HOST', '127.0.0.1')
 PORT = int(os.getenv('SIMTRADE_API_PORT', '8000'))
@@ -39,7 +49,7 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-db = DbHandler(os.getenv('FIREBASE_JSON_PATH'))
+db = DbHandler(backend_path(os.getenv('FIREBASE_JSON_PATH')))
 market_api = ApiHandler(os.getenv('FINNHUB_API_KEY'))
 
 

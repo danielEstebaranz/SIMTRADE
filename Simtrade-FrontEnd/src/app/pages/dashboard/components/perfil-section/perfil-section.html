@@ -1,0 +1,91 @@
+<section class="profile-card" aria-labelledby="profile-title">
+  <div class="profile-hero">
+    <div class="profile-avatar" aria-hidden="true">
+      {{ (user()?.username || 'US').slice(0, 2).toUpperCase() }}
+    </div>
+    <div>
+      <p class="eyebrow">Perfil</p>
+      <h2 id="profile-title">{{ user()?.username }}</h2>
+      <p class="profile-subtitle">{{ user()?.email || user()?.username }}</p>
+    </div>
+  </div>
+
+  <div class="profile-workspace">
+    <div class="profile-left-column">
+      <section aria-labelledby="profile-summary-title">
+        <h3 id="profile-summary-title">Resumen</h3>
+        <div class="profile-summary">
+          <article>
+            <p>Saldo disponible</p>
+            <strong>{{ formatNumber(user()?.saldo, 2) }} $</strong>
+          </article>
+          <article>
+            <p>Activos</p>
+            <strong>{{ assetCount() }}</strong>
+          </article>
+          <article>
+            <p>Tema actual</p>
+            <strong>{{ themeLabel() }}</strong>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="profile-data-title">
+        <h3 id="profile-data-title">Datos de la cuenta</h3>
+        <dl class="profile-list">
+          <div>
+            <dt>Email</dt>
+            <dd>{{ user()?.email || user()?.username }}</dd>
+          </div>
+          <div>
+            <dt>Preferencia visual</dt>
+            <dd>{{ themeLabel() }}</dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+
+    <section class="composition-panel" aria-labelledby="composition-title">
+      <h3 id="composition-title">Distribucion de cartera</h3>
+      @if (composition().length > 0) {
+        <div class="chart-box">
+          <canvas
+            #compositionCanvas
+            aria-label="Grafica de distribucion porcentual de la cartera"
+            role="img"
+          ></canvas>
+        </div>
+
+        <div class="composition-list">
+          @for (item of composition(); track item.ticker) {
+            <div>
+              <span>{{ item.name }}</span>
+              <strong>{{ formatNumber(item.percentage, 2) }}%</strong>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="muted">Compra activos para ver su distribucion.</p>
+      }
+    </section>
+  </div>
+
+  <section aria-labelledby="profile-portfolio-title">
+    <h3 id="profile-portfolio-title">Cartera actual</h3>
+    @if (profilePositions().length > 0) {
+      <div class="profile-positions">
+        @for (position of profilePositions(); track position.ticker) {
+          <div>
+            <span>
+              <strong>{{ position.name }}</strong>
+              <small>{{ position.ticker }}</small>
+            </span>
+            <span>{{ formatNumber(position.quantity, 4) }} ud.</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="muted">Todavia no hay activos en cartera.</p>
+    }
+  </section>
+</section>

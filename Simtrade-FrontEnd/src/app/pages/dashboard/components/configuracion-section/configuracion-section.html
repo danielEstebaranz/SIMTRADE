@@ -1,0 +1,343 @@
+<section class="settings-page" aria-labelledby="settings-title">
+  <div class="settings-layout">
+    <aside class="settings-sidebar" aria-label="Opciones de configuracion">
+      <div class="section-heading">
+        <p class="eyebrow">Configuracion</p>
+        <h2 id="settings-title">Opciones</h2>
+      </div>
+
+      <div class="settings-tabs" role="tablist" aria-label="Apartados de configuracion">
+        @for (option of panelOptions; track option.value) {
+          <button
+            type="button"
+            role="tab"
+            [class.active]="activePanel() === option.value"
+            [class.danger-option]="option.danger"
+            [attr.aria-selected]="activePanel() === option.value"
+            (click)="selectPanel(option.value)"
+          >
+            <span class="tab-code">{{ option.label.slice(0, 2).toUpperCase() }}</span>
+            <span>{{ option.label }}</span>
+          </button>
+        }
+      </div>
+    </aside>
+
+    <div class="settings-content">
+      @switch (activePanel()) {
+        @case ('appearance') {
+          <article class="settings-card" aria-labelledby="theme-title">
+            <div class="card-header">
+              <div>
+                <p class="eyebrow">Apariencia</p>
+                <h3 id="theme-title">Tema visual</h3>
+              </div>
+              @if (settingsState().status === 'loading' || settingsState().status === 'saving') {
+                <span class="state-pill" role="status">
+                  {{ settingsState().status === 'loading' ? 'Cargando' : 'Guardando' }}
+                </span>
+              }
+            </div>
+
+            <div class="theme-switch" role="group" aria-label="Seleccion de tema">
+              @for (option of themeOptions; track option.value) {
+                <button
+                  type="button"
+                  [class.active]="theme() === option.value"
+                  [attr.aria-pressed]="theme() === option.value"
+                  [disabled]="settingsState().status === 'saving'"
+                  (click)="selectTheme(option.value)"
+                >
+                  {{ option.label }}
+                </button>
+              }
+            </div>
+
+            @if (settingsState().status === 'error') {
+              <p class="action-message error" role="alert">{{ settingsState().errorMessage }}</p>
+            } @else if (settingsState().successMessage) {
+              <p class="action-message success" role="status">{{ settingsState().successMessage }}</p>
+            }
+          </article>
+        }
+
+        @case ('funds') {
+          <article class="settings-card funds-card" aria-labelledby="funds-title">
+            <div>
+              <p class="eyebrow">Fondos</p>
+              <h3 id="funds-title">Gestion de saldo</h3>
+            </div>
+
+            <div class="funds-grid">
+              <div class="funds-panel">
+                <div class="funds-actions" role="tablist" aria-label="Acciones de fondos">
+                  <button
+                    type="button"
+                    role="tab"
+                    [class.active]="fundsAction() === 'add'"
+                    [attr.aria-selected]="fundsAction() === 'add'"
+                    (click)="selectFundsAction('add')"
+                  >
+                    Añadir fondos
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    [class.active]="fundsAction() === 'withdraw'"
+                    [attr.aria-selected]="fundsAction() === 'withdraw'"
+                    (click)="selectFundsAction('withdraw')"
+                  >
+                    Quitar fondos
+                  </button>
+                </div>
+
+                <form
+                  class="funds-form"
+                  [formGroup]="fundsForm"
+                  (ngSubmit)="fundsAction() === 'add' ? addFunds() : withdrawFunds()"
+                >
+                  <label class="field-label" for="funds-amount">Cantidad</label>
+                  <div class="amount-field">
+                    <span aria-hidden="true">$</span>
+                    <input
+                      id="funds-amount"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      formControlName="amount"
+                      aria-describedby="funds-limit funds-message"
+                      [attr.aria-invalid]="fundsForm.controls.amount.invalid && fundsForm.controls.amount.touched"
+                    >
+                  </div>
+                  <p id="funds-limit" class="field-help">
+                    {{ fundsAction() === 'add' ? 'Maximo 100000 $ por ingreso.' : 'Solo puedes quitar saldo disponible.' }}
+                  </p>
+
+                  <div class="quick-funds" role="group" aria-label="Cantidades rapidas">
+                    @for (amount of quickFundAmounts; track amount) {
+                      <button type="button" (click)="setQuickFundAmount(amount)">
+                        {{ formatNumber(amount, 0) }} $
+                      </button>
+                    }
+                  </div>
+
+                  @if (fundsState().status === 'error') {
+                    <p id="funds-message" class="action-message error" role="alert">
+                      {{ fundsState().errorMessage }}
+                    </p>
+                  } @else if (fundsState().status === 'success') {
+                    <p id="funds-message" class="action-message success" role="status">
+                      {{ fundsState().successMessage }}
+                    </p>
+                  } @else {
+                    <span id="funds-message" class="sr-only">Introduce una cantidad valida.</span>
+                  }
+
+                  <button
+                    class="primary-button"
+                    type="submit"
+                    [disabled]="fundsState().status === 'saving'"
+                  >
+                    @if (fundsState().status === 'saving') {
+                      Guardando...
+                    } @else {
+                      {{ fundsAction() === 'add' ? 'Añadir fondos' : 'Quitar fondos' }}
+                    }
+                  </button>
+                </form>
+              </div>
+
+              <div class="reset-box">
+                <div>
+                  <p class="eyebrow danger">Reinicio</p>
+                  <h3>Reiniciar cartera</h3>
+                </div>
+
+                <p class="danger-copy">
+                  Deja el saldo en 1000 $, elimina los activos actuales y conserva la cuenta.
+                </p>
+
+                <label class="field-label" for="reset-confirmation">Confirmacion</label>
+                <input
+                  id="reset-confirmation"
+                  class="danger-input"
+                  type="text"
+                  autocomplete="off"
+                  [value]="resetConfirmation()"
+                  aria-describedby="reset-help reset-message"
+                  (input)="updateResetConfirmationFromEvent($event)"
+                >
+                <p id="reset-help" class="field-help">Escribe REINICIAR en mayusculas para activar el reinicio.</p>
+
+                @if (resetState().status === 'error') {
+                  <p id="reset-message" class="action-message error" role="alert">
+                    {{ resetState().errorMessage }}
+                  </p>
+                } @else if (resetState().status === 'success') {
+                  <p id="reset-message" class="action-message success" role="status">
+                    {{ resetState().successMessage }}
+                  </p>
+                } @else {
+                  <span id="reset-message" class="sr-only">Confirmacion de reinicio de cartera.</span>
+                }
+
+                <button
+                  class="danger-button"
+                  type="button"
+                  [disabled]="!canResetPortfolio() || resetState().status === 'saving'"
+                  (click)="openResetDialog()"
+                >
+                  Reiniciar cartera
+                </button>
+              </div>
+            </div>
+          </article>
+        }
+
+        @case ('danger') {
+          <article class="settings-card danger-card" aria-labelledby="danger-title">
+            <div>
+              <p class="eyebrow danger">Zona de riesgo</p>
+              <h3 id="danger-title">Borrar cuenta</h3>
+            </div>
+
+            <p class="danger-copy">
+              Se eliminara el perfil, la cartera y el historial asociado a esta cuenta.
+            </p>
+
+            <label class="field-label" for="delete-confirmation">Confirmacion</label>
+            <input
+              id="delete-confirmation"
+              class="danger-input"
+              type="text"
+              autocomplete="off"
+              [value]="deleteConfirmation()"
+              aria-describedby="delete-help delete-message"
+              (input)="updateDeleteConfirmationFromEvent($event)"
+            >
+            <p id="delete-help" class="field-help">Escribe BORRAR en mayusculas para activar el borrado.</p>
+
+            @if (deleteState().status === 'error') {
+              <p id="delete-message" class="action-message error" role="alert">
+                {{ deleteState().errorMessage }}
+              </p>
+            } @else {
+              <span id="delete-message" class="sr-only">Confirmacion de borrado de cuenta.</span>
+            }
+
+            <button
+              class="danger-button"
+              type="button"
+              [disabled]="!canDeleteAccount() || deleteState().status === 'saving'"
+              (click)="deleteAccount()"
+            >
+              Borrar cuenta
+            </button>
+          </article>
+        }
+      }
+    </div>
+  </div>
+</section>
+
+@if (resetDialogOpen()) {
+  <div class="modal-backdrop" role="presentation" (click)="closeResetDialog()">
+    <section
+      class="delete-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="reset-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow danger">Confirmacion final</p>
+          <h3 id="reset-dialog-title">Verifica tu contraseña</h3>
+        </div>
+        <button class="icon-button" type="button" aria-label="Cerrar reinicio" (click)="closeResetDialog()">x</button>
+      </div>
+
+      <p class="danger-copy">
+        Para reiniciar la cartera introduce la contraseña actual.
+      </p>
+
+      <label class="field-label" for="reset-password">Contraseña</label>
+      <input
+        id="reset-password"
+        class="danger-input"
+        type="password"
+        autocomplete="current-password"
+        [value]="resetPassword()"
+        [disabled]="resetState().status === 'saving'"
+        (input)="updateResetPasswordFromEvent($event)"
+      >
+
+      @if (resetState().status === 'error') {
+        <p class="action-message error" role="alert">{{ resetState().errorMessage }}</p>
+      }
+
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" (click)="closeResetDialog()">Cancelar</button>
+        <button
+          class="danger-button"
+          type="button"
+          [disabled]="resetState().status === 'saving'"
+          (click)="confirmResetPortfolio()"
+        >
+          {{ resetState().status === 'saving' ? 'Reiniciando...' : 'Confirmar reinicio' }}
+        </button>
+      </div>
+    </section>
+  </div>
+}
+
+@if (deleteDialogOpen()) {
+  <div class="modal-backdrop" role="presentation" (click)="closeDeleteDialog()">
+    <section
+      class="delete-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow danger">Confirmacion final</p>
+          <h3 id="delete-dialog-title">Verifica tu contraseña</h3>
+        </div>
+        <button class="icon-button" type="button" aria-label="Cerrar borrado" (click)="closeDeleteDialog()">x</button>
+      </div>
+
+      <p class="danger-copy">
+        Para borrar la cuenta introduce la contraseña actual.
+      </p>
+
+      <label class="field-label" for="delete-password">Contraseña</label>
+      <input
+        id="delete-password"
+        class="danger-input"
+        type="password"
+        autocomplete="current-password"
+        [value]="deletePassword()"
+        [disabled]="deleteState().status === 'saving'"
+        (input)="updateDeletePasswordFromEvent($event)"
+      >
+
+      @if (deleteState().status === 'error') {
+        <p class="action-message error" role="alert">{{ deleteState().errorMessage }}</p>
+      }
+
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" (click)="closeDeleteDialog()">Cancelar</button>
+        <button
+          class="danger-button"
+          type="button"
+          [disabled]="deleteState().status === 'saving'"
+          (click)="confirmDeleteAccount()"
+        >
+          {{ deleteState().status === 'saving' ? 'Borrando...' : 'Confirmar borrado' }}
+        </button>
+      </div>
+    </section>
+  </div>
+}

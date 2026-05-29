@@ -1,11 +1,22 @@
 import os
 import time
+from pathlib import Path
+
 from dotenv import load_dotenv
 from Api_Handler import ApiHandler
 from db_handler import DbHandler
 from market_assets import market_tickers
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
+
+
+def backend_path(env_value):
+    if not env_value:
+        return env_value
+
+    path = Path(env_value)
+    return str(path if path.is_absolute() else BASE_DIR / path)
 
 DIVIDEND_DAYS_PER_CYCLE = 30
 DIVIDEND_RATES = {
@@ -65,7 +76,7 @@ def reinvertir_dividendos_usuarios(api, db):
 
 def ejecutar_worker():
     api = ApiHandler(os.getenv('FINNHUB_API_KEY'))
-    db = DbHandler(os.getenv('FIREBASE_JSON_PATH'))
+    db = DbHandler(backend_path(os.getenv('FIREBASE_JSON_PATH')))
     
     activos = market_tickers()
     intervalo_segundos = 60

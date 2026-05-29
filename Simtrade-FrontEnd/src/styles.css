@@ -1,0 +1,370 @@
+:root {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-text: #111827;
+  --color-muted: #4b5563;
+  --color-border: #e5e7eb;
+  --color-strong-border: #d1d5db;
+  --color-control-bg: #e5e7eb;
+  --color-control-text: #374151;
+  --color-input-bg: #ffffff;
+  --color-input-border: #94a3b8;
+  --color-sidebar-bg: #111827;
+  --color-sidebar-hover: #1f2937;
+  --color-sidebar-icon: #374151;
+  --color-sidebar-text: #f9fafb;
+  --color-accent: #0284c7;
+  --color-accent-strong: #0369a1;
+  --color-focus: #7dd3fc;
+  --color-success: #047857;
+  --color-danger: #b91c1c;
+  --color-danger-strong: #991b1b;
+  --color-success-bg: #dcfce7;
+  --color-success-text: #166534;
+  --color-danger-bg: #fee2e2;
+  --color-danger-text: #7f1d1d;
+  --color-info-bg: #e0f2fe;
+  --color-info-text: #075985;
+  --color-disabled-bg: #94a3b8;
+  --color-disabled-text: #ffffff;
+  --color-modal-backdrop: rgba(15, 23, 42, 0.42);
+  --shadow-dialog: 0 24px 60px rgba(15, 23, 42, 0.22);
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #111315;
+  --color-surface: #1a1d1f;
+  --color-surface-muted: #23272a;
+  --color-text: #f3f4f0;
+  --color-muted: #c2c7c4;
+  --color-border: #383f42;
+  --color-strong-border: #4b5559;
+  --color-control-bg: #2d3335;
+  --color-control-text: #d7dedb;
+  --color-input-bg: #151719;
+  --color-input-border: #5b666b;
+  --color-sidebar-bg: #0b0d0e;
+  --color-sidebar-hover: #252a2d;
+  --color-sidebar-icon: #30373a;
+  --color-sidebar-text: #f3f4f0;
+  --color-accent: #0f9f9a;
+  --color-accent-strong: #2dd4bf;
+  --color-focus: #5eead4;
+  --color-success: #34d399;
+  --color-danger: #e11d48;
+  --color-danger-strong: #fb7185;
+  --color-success-bg: #12382b;
+  --color-success-text: #bbf7d0;
+  --color-danger-bg: #441722;
+  --color-danger-text: #fecdd3;
+  --color-info-bg: #12373a;
+  --color-info-text: #99f6e4;
+  --color-disabled-bg: #4b5559;
+  --color-disabled-text: #c2c7c4;
+  --color-modal-backdrop: rgba(0, 0, 0, 0.62);
+  --shadow-dialog: 0 24px 60px rgba(0, 0, 0, 0.38);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+:root[data-theme='dark'] app-dashboard .app-shell {
+  background: var(--color-sidebar-bg);
+}
+
+:root[data-theme='dark'] app-dashboard .main-content,
+:root[data-theme='dark'] app-dashboard .app-shell {
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-dashboard .main-content {
+  background: var(--color-bg);
+}
+
+:root[data-theme='dark'] app-dashboard h1 {
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-dashboard .help-link {
+  background: #111827;
+  color: var(--color-focus);
+}
+
+:root[data-theme='dark'] app-dashboard .page-header > button {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-sidebar .sidebar {
+  background-color: var(--color-sidebar-bg);
+  color: var(--color-sidebar-text);
+}
+
+:root[data-theme='dark'] app-sidebar .navigation-link {
+  color: var(--color-sidebar-text);
+}
+
+:root[data-theme='dark'] app-sidebar .navigation-link:hover,
+:root[data-theme='dark'] app-sidebar .navigation-link.active {
+  background: var(--color-sidebar-hover);
+}
+
+:root[data-theme='dark'] app-sidebar .navigation-icon {
+  background: var(--color-sidebar-icon);
+}
+
+:root[data-theme='dark'] app-sidebar .navigation-link.active,
+:root[data-theme='dark'] app-sidebar .navigation-link.active .navigation-icon {
+  box-shadow: inset 3px 0 0 var(--color-accent-strong);
+}
+
+:root[data-theme='dark'] app-cartera-section,
+:root[data-theme='dark'] app-mercado-section,
+:root[data-theme='dark'] app-historial-section,
+:root[data-theme='dark'] app-bonos-section,
+:root[data-theme='dark'] app-ranking-section {
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .summary-card,
+:root[data-theme='dark'] app-cartera-section .positions-card,
+:root[data-theme='dark'] app-cartera-section .trend-card,
+:root[data-theme='dark'] app-mercado-section .assets-card,
+:root[data-theme='dark'] app-mercado-section .trend-card,
+:root[data-theme='dark'] app-historial-section .history-card,
+:root[data-theme='dark'] app-bonos-section .offers-card,
+:root[data-theme='dark'] app-bonos-section .bonds-card,
+:root[data-theme='dark'] app-ranking-section {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+:root[data-theme='dark'] app-cartera-section h2,
+:root[data-theme='dark'] app-cartera-section .summary-card strong,
+:root[data-theme='dark'] app-cartera-section .trend-stats strong,
+:root[data-theme='dark'] app-cartera-section .asset-name,
+:root[data-theme='dark'] app-cartera-section .ticker,
+:root[data-theme='dark'] app-cartera-section .field-label,
+:root[data-theme='dark'] app-mercado-section h2,
+:root[data-theme='dark'] app-mercado-section .trend-stats strong,
+:root[data-theme='dark'] app-mercado-section .ticker,
+:root[data-theme='dark'] app-mercado-section .field-label,
+:root[data-theme='dark'] app-historial-section h2,
+:root[data-theme='dark'] app-historial-section .history-content strong,
+:root[data-theme='dark'] app-bonos-section h2,
+:root[data-theme='dark'] app-bonos-section h3,
+:root[data-theme='dark'] app-bonos-section .field-label,
+:root[data-theme='dark'] app-bonos-section .offer-list strong,
+:root[data-theme='dark'] app-bonos-section .bond-row strong,
+:root[data-theme='dark'] app-ranking-section h2 {
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .summary-card p,
+:root[data-theme='dark'] app-cartera-section .section-heading p,
+:root[data-theme='dark'] app-cartera-section .trend-header p,
+:root[data-theme='dark'] app-cartera-section .trend-stats p,
+:root[data-theme='dark'] app-cartera-section .chart-footer,
+:root[data-theme='dark'] app-cartera-section .quantity,
+:root[data-theme='dark'] app-cartera-section .position-detail,
+:root[data-theme='dark'] app-cartera-section .empty-state,
+:root[data-theme='dark'] app-cartera-section .chart-status,
+:root[data-theme='dark'] app-cartera-section .sell-preview,
+:root[data-theme='dark'] app-mercado-section .section-heading p,
+:root[data-theme='dark'] app-mercado-section .trend-header p,
+:root[data-theme='dark'] app-mercado-section .trend-stats p,
+:root[data-theme='dark'] app-mercado-section .chart-footer,
+:root[data-theme='dark'] app-mercado-section .asset-name,
+:root[data-theme='dark'] app-mercado-section .asset-detail,
+:root[data-theme='dark'] app-mercado-section .buy-preview,
+:root[data-theme='dark'] app-historial-section .history-content span,
+:root[data-theme='dark'] app-historial-section .state-message,
+:root[data-theme='dark'] app-bonos-section .offer-list small,
+:root[data-theme='dark'] app-bonos-section .bond-row span,
+:root[data-theme='dark'] app-bonos-section .empty-state,
+:root[data-theme='dark'] app-bonos-section .bond-preview,
+:root[data-theme='dark'] app-ranking-section p {
+  color: var(--color-muted);
+}
+
+:root[data-theme='dark'] app-cartera-section .eyebrow,
+:root[data-theme='dark'] app-mercado-section .eyebrow,
+:root[data-theme='dark'] app-historial-section .eyebrow,
+:root[data-theme='dark'] app-bonos-section .eyebrow {
+  color: var(--color-accent-strong);
+}
+
+:root[data-theme='dark'] app-cartera-section .position-row,
+:root[data-theme='dark'] app-mercado-section .asset-row,
+:root[data-theme='dark'] app-historial-section .history-item,
+:root[data-theme='dark'] app-bonos-section .offer-list button,
+:root[data-theme='dark'] app-bonos-section .bond-row,
+:root[data-theme='dark'] app-bonos-section .bond-preview {
+  background: var(--color-surface-muted);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .position-row:hover,
+:root[data-theme='dark'] app-cartera-section .position-row.active,
+:root[data-theme='dark'] app-mercado-section .asset-row:hover,
+:root[data-theme='dark'] app-mercado-section .asset-row.active,
+:root[data-theme='dark'] app-bonos-section .offer-list button:hover,
+:root[data-theme='dark'] app-bonos-section .offer-list button.active {
+  background: var(--color-info-bg);
+  border-color: var(--color-accent-strong);
+}
+
+:root[data-theme='dark'] app-cartera-section .range-switch,
+:root[data-theme='dark'] app-mercado-section .range-switch {
+  background: var(--color-control-bg);
+}
+
+:root[data-theme='dark'] app-cartera-section .range-switch button,
+:root[data-theme='dark'] app-mercado-section .range-switch button {
+  background: transparent;
+  color: var(--color-control-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .range-switch button.active,
+:root[data-theme='dark'] app-mercado-section .range-switch button.active {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .sell-actions {
+  background: var(--color-danger-bg);
+}
+
+:root[data-theme='dark'] app-cartera-section .sell-actions button {
+  background: transparent;
+  color: var(--color-danger-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .sell-actions button:hover {
+  background: var(--color-surface);
+}
+
+:root[data-theme='dark'] app-mercado-section .buy-button,
+:root[data-theme='dark'] app-mercado-section .primary-button {
+  background: var(--color-accent);
+}
+
+:root[data-theme='dark'] app-cartera-section .primary-button {
+  background: var(--color-danger);
+}
+
+:root[data-theme='dark'] app-cartera-section .secondary-button,
+:root[data-theme='dark'] app-mercado-section .secondary-button,
+:root[data-theme='dark'] app-cartera-section .icon-button,
+:root[data-theme='dark'] app-mercado-section .icon-button {
+  background: var(--color-surface-muted);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .chart-container,
+:root[data-theme='dark'] app-cartera-section .chart-status,
+:root[data-theme='dark'] app-mercado-section .chart-container {
+  background: var(--color-input-bg);
+  border-color: var(--color-border);
+}
+
+:root[data-theme='dark'] app-cartera-section .chart-overlay,
+:root[data-theme='dark'] app-mercado-section .chart-overlay {
+  background: rgba(21, 23, 25, 0.92);
+  color: var(--color-muted);
+}
+
+:root[data-theme='dark'] app-cartera-section .modal-backdrop,
+:root[data-theme='dark'] app-mercado-section .modal-backdrop {
+  background: var(--color-modal-backdrop);
+}
+
+:root[data-theme='dark'] app-cartera-section .sell-dialog,
+:root[data-theme='dark'] app-mercado-section .buy-dialog {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-dialog);
+}
+
+:root[data-theme='dark'] app-cartera-section .percentage-input,
+:root[data-theme='dark'] app-mercado-section .amount-input,
+:root[data-theme='dark'] app-bonos-section .amount-field {
+  background: var(--color-input-bg);
+  border-color: var(--color-input-border);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-bonos-section .amount-field input {
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .summary-card strong.positive,
+:root[data-theme='dark'] app-cartera-section .trend-stats .positive,
+:root[data-theme='dark'] app-mercado-section .trend-stats .positive {
+  color: var(--color-success);
+}
+
+:root[data-theme='dark'] app-cartera-section .summary-card strong.negative,
+:root[data-theme='dark'] app-cartera-section .trend-stats .negative,
+:root[data-theme='dark'] app-mercado-section .trend-stats .negative {
+  color: var(--color-danger-strong);
+}
+
+:root[data-theme='dark'] app-cartera-section .action-message.error,
+:root[data-theme='dark'] app-cartera-section .dialog-message.error,
+:root[data-theme='dark'] app-mercado-section .dialog-message.error,
+:root[data-theme='dark'] app-historial-section .state-message.error,
+:root[data-theme='dark'] app-bonos-section .action-message.error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+:root[data-theme='dark'] app-cartera-section .action-message.success,
+:root[data-theme='dark'] app-cartera-section .dialog-message.success,
+:root[data-theme='dark'] app-mercado-section .dialog-message.success,
+:root[data-theme='dark'] app-bonos-section .action-message.success {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+:root[data-theme='dark'] app-historial-section .operation-badge {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+:root[data-theme='dark'] app-historial-section .operation-badge.sale {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+:root[data-theme='dark'] app-historial-section .operation-badge.deposit {
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+:root[data-theme='dark'] app-historial-section .operation-badge.bond {
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+@media (max-width: 720px) {
+  :root[data-theme='dark'] app-dashboard .app-shell {
+    background: var(--color-bg);
+  }
+}

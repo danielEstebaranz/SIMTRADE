@@ -1,0 +1,28 @@
+<aside class="sidebar" aria-label="Navegacion principal">
+  <div class="logo-container">
+    <img
+      class="logo"
+      ngSrc="/LogoSIMTRADE-removebg-preview.png"
+      width="768"
+      height="768"
+      alt="Simtrade"
+      priority
+    >
+  </div>
+
+  
+  <nav class="navigation" aria-label="Secciones de Simtrade">
+    @for (item of menuItems(); track item.label) {
+      <a
+        class="navigation-link"
+        [routerLink]="['/panel', item.path]"
+        [class.active]="activePath() === item.path"
+        [attr.aria-current]="activePath() === item.path ? 'page' : null"
+      >
+        <span class="navigation-icon" aria-hidden="true">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+</aside>

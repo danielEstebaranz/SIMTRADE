@@ -45,12 +45,12 @@ class DbHandler:
                 cred = credentials.Certificate(certificado_path)
                 firebase_admin.initialize_app(cred)
             self.db = firestore.client()
-            print("Conexión establecida con Firebase Firestore.")
+            print("Conexion establecida con Firebase Firestore.")
         except Exception as exc:
-            print(f"Error crítico al conectar con Firebase: {exc}")
+            print(f"Error critico al conectar con Firebase: {exc}")
     
     def actualizar_precio(self, datos):
-        """Actualiza los precios en la colección 'mercado'"""
+        """Actualiza los precios en la colecciÃ³n 'mercado'"""
         try:
             doc_ref = self.db.collection('mercado').document(datos['simbolo'])
             doc_ref.set({
@@ -160,7 +160,7 @@ class DbHandler:
         return settings
 
     def _registrar_transaccion(self, user_id, tipo, ticker, cantidad, precio, total):
-        """Guarda un registro de la operación en la colección 'transacciones'."""
+        """Guarda un registro de la operaciÃ³n en la colecciÃ³n 'transacciones'."""
         try:
             trans_ref = self.db.collection('transacciones').document()
             trans_ref.set({

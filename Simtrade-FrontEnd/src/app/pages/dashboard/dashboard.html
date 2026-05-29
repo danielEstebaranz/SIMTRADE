@@ -1,0 +1,32 @@
+<div class="app-shell">
+  <app-sidebar />
+
+  <main class="main-content" id="inicio">
+    <header class="page-header">
+      <div>
+        <h1>Bienvenido, {{ user()?.username }}</h1>
+      </div>
+      <div class="header-actions">
+        <a
+          class="help-link"
+          [routerLink]="['/panel', 'ayuda']"
+          aria-label="Abrir ayuda"
+        >
+          ?
+        </a>
+        <a
+          class="profile-link"
+          [routerLink]="['/panel', 'perfil']"
+          aria-label="Abrir perfil"
+        >
+          {{ (user()?.username || 'US').slice(0, 2).toUpperCase() }}
+        </a>
+        <button type="button" (click)="logout()">Cerrar sesion</button>
+      </div>
+    </header>
+
+    <section class="dashboard-sections" aria-label="Secciones del panel">
+      <router-outlet />
+    </section>
+  </main>
+</div>

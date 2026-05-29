@@ -1,0 +1,122 @@
+<section class="bonds-page" aria-labelledby="bonds-title">
+  <div class="section-heading">
+    <h2 id="bonds-title">Bonos temporales</h2>
+  </div>
+
+  <div class="bonds-layout">
+    <article class="offers-card" aria-labelledby="offers-title">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Ofertas</p>
+          <h3 id="offers-title">Elige un bono</h3>
+        </div>
+        <strong>{{ formatNumber(user()?.saldo, 2) }} $</strong>
+      </div>
+
+      <div class="offer-list" role="listbox" aria-label="Bonos disponibles">
+        @for (offer of offers(); track offer.ticker) {
+          <button
+            type="button"
+            role="option"
+            [class.active]="selectedTicker() === offer.ticker"
+            [attr.aria-selected]="selectedTicker() === offer.ticker"
+            (click)="selectOffer(offer.ticker)"
+          >
+            <span>
+              <strong>{{ offer.name }}</strong>
+              <small>{{ offer.ticker }}</small>
+            </span>
+            <span class="return-pill">+{{ formatNumber(offer.return_percent, 2) }}%</span>
+          </button>
+        }
+      </div>
+
+      <form class="bond-form" [formGroup]="bondForm" (ngSubmit)="investBond()">
+        <label class="field-label" for="bond-amount">Cantidad a invertir</label>
+        <div class="amount-field">
+          <span aria-hidden="true">$</span>
+          <input
+            id="bond-amount"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            formControlName="amount"
+            [attr.aria-invalid]="bondForm.controls.amount.invalid && bondForm.controls.amount.touched"
+          >
+        </div>
+
+        @if (selectedOffer()) {
+          <div class="bond-preview">
+            <span>Duracion: {{ selectedOffer().duration_seconds }} s</span>
+            <span>Rentabilidad: {{ formatNumber(selectedOffer().return_percent, 2) }}%</span>
+          </div>
+        }
+
+        @if (state().status === 'error') {
+          <p class="action-message error" role="alert">{{ state().errorMessage }}</p>
+        } @else if (state().successMessage) {
+          <p class="action-message success" role="status">{{ state().successMessage }}</p>
+        }
+
+        <button class="primary-button" type="submit" [disabled]="state().status === 'saving'">
+          {{ state().status === 'saving' ? 'Contratando...' : 'Contratar bono' }}
+        </button>
+      </form>
+    </article>
+
+    <article class="bonds-card" aria-labelledby="active-bonds-title">
+      <div class="card-header">
+        <h3 id="active-bonds-title">Bonos activos</h3>
+        <span class="count-pill">{{ activeBonds().length }}</span>
+      </div>
+
+      @if (activeBonds().length) {
+        <div class="bond-list">
+          @for (bond of activeBonds(); track bond.id) {
+            <article class="bond-row active-bond">
+              <div>
+                <strong>{{ bond.name }}</strong>
+                <span>{{ formatNumber(bond.amount, 2) }} $ invertidos</span>
+              </div>
+              <div class="bond-meta">
+                <span class="timer">{{ formatTime(bond.secondsRemaining) }}</span>
+                <span>Retorno {{ formatNumber(bond.payout, 2) }} $</span>
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <p class="empty-state">No tienes bonos activos.</p>
+      }
+    </article>
+  </div>
+
+  <article class="bonds-card settled-card" aria-labelledby="settled-bonds-title">
+    <div class="card-header">
+      <div>
+        <p class="eyebrow">Finalizados</p>
+        <h3 id="settled-bonds-title">Bonos liquidados</h3>
+      </div>
+      <span class="count-pill">{{ settledBonds().length }}</span>
+    </div>
+
+    @if (settledBonds().length) {
+      <div class="bond-list compact">
+        @for (bond of settledBonds(); track bond.id) {
+          <article class="bond-row">
+            <div>
+              <strong>{{ bond.name }}</strong>
+              <span>Beneficio: {{ formatNumber(bond.profit, 2) }} $</span>
+            </div>
+            <div class="bond-meta">
+              <span>+{{ formatNumber(bond.returnPercent, 2) }}%</span>
+              <span>Total {{ formatNumber(bond.payout, 2) }} $</span>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="empty-state">Los bonos completados apareceran aqui.</p>
+    }
+  </article>
+</section>
